@@ -1,6 +1,7 @@
 import React, { Component } from "react";
 import ProdutoDataService from "../../services/produto.service";
 import { Link } from "react-router-dom";
+import Produto from "./produto.component";
 
 export default class ProdutosList extends Component {
   constructor(props) {
@@ -11,6 +12,8 @@ export default class ProdutosList extends Component {
     this.setActiveProduto = this.setActiveProduto.bind(this);
     this.removeAllProdutos = this.removeAllProdutos.bind(this);
     this.searchNome = this.searchNome.bind(this);
+    this.onChangeMargemLucro = this.onChangeMargemLucro.bind(this);
+    this.margemLucro = this.margemLucro.bind(this);
 
     this.state = {
       produtos: [],
@@ -30,6 +33,14 @@ export default class ProdutosList extends Component {
     this.setState({
       searchNome: searchNome
     });
+  }
+
+  onChangeMargemLucro(e) {
+    const margemLucro = e.target.value;
+
+    this.setState({
+      margemLucro: margemLucro
+    })
   }
 
   retrieveProdutos() {
@@ -84,9 +95,31 @@ export default class ProdutosList extends Component {
       });
   }
 
+  margemLucro() {
+    ProdutoDataService.getAll()
+      .then(response => {
+        this.setState({
+          produtos: response.data
+        });
+        var i;
+        for (i = 0; i < this.produtos.lenght; i++) {
+          this.setState({
+            currentProduto: this.produtos[i]
+          });
+          currentProduto.precoVenda = currentProduto.precoCusto * (this.margemLucro / 100);
+          ProdutoDataService.update(currentProduto.id, currentProduto);
+        }
+        this.refreshList();
+        console.log(response.data);
+      })
+      .catch(e => {
+        console.log(e);
+      });
+  }
+
   render() {
     // ...
-    const { searchNome, produtos, currentProduto, currentIndex } = this.state;
+    const { searchNome, produtos, currentProduto, currentIndex, margemLucro } = this.state;
 
     return (
       <div className="list row">
@@ -113,22 +146,6 @@ export default class ProdutosList extends Component {
         <div className="col-lg">
           <h4>Lista de Produtos</h4>
         </div>
-
-        {/* <ul className="list-group">
-            {produtos &&
-              produtos.map((produto, index) => (
-                <li
-                  className={
-                    "list-group-item " +
-                    (index === currentIndex ? "active" : "")
-                  }
-                  onClick={() => this.setActiveProduto(produto, index)}
-                  key={index}
-                >
-                  {produto.nome}
-                </li>
-              ))}
-          </ul> */}
 
         <div class="table-responsive">
           <table class="table">
@@ -167,21 +184,31 @@ export default class ProdutosList extends Component {
               Remover Todos
             </button>
           </div>
-          <div className="col-sm-3">
-          {(currentProduto ? "active" : "")(
-            <div>
-              <Link
-                to={"/produtos/" + currentProduto.id}
-                className="badge badge-warning"
-              >
-                Editar
-              </Link>
-            </div>
-          )}
         </div>
 
+        <div className="col-sm-6">
+          <div className="input-group mb-3">
+            <label htmlFor="margemLucro">Margem de Lucro (%)</label>
+            <input
+              type="number"
+              min="0"
+              max="100"
+              className="form-control"
+              value={margemLucro}
+              onChange={this.onChangeMargemLucro}
+            />
+            <div className="input-group-append">
+              <button
+                className="btn btn-outline-secondary"
+                type="button"
+                onClick={this.margemLucro}
+              >
+                Atualizar Preço
+              </button>
+            </div>
+          </div>
         </div>
-        
+
       </div>
     );
   }
