@@ -46,16 +46,16 @@ export default class ProdutosList extends Component {
   }
 
   refreshList() {
-    this.retrieveTutorials();
+    this.retrieveProdutos();
     this.setState({
       currentProduto: null,
       currentIndex: -1
     });
   }
 
-  setActiveProduto(tutorial, index) {
+  setActiveProduto(produto, index) {
     this.setState({
-      currentProduto: tutorial,
+      currentProduto: produto,
       currentIndex: index
     });
   }
@@ -90,7 +90,7 @@ export default class ProdutosList extends Component {
 
     return (
       <div className="list row">
-        <div className="col-md-8">
+        <div className="col-md-12">
           <div className="input-group mb-3">
             <input
               type="text"
@@ -110,10 +110,11 @@ export default class ProdutosList extends Component {
             </div>
           </div>
         </div>
-        <div className="col-md-6">
+        <div className="col-lg">
           <h4>Lista de Produtos</h4>
+        </div>
 
-          <ul className="list-group">
+        {/* <ul className="list-group">
             {produtos &&
               produtos.map((produto, index) => (
                 <li
@@ -127,38 +128,48 @@ export default class ProdutosList extends Component {
                   {produto.nome}
                 </li>
               ))}
-          </ul>
+          </ul> */}
 
-          <button
-            className="m-3 btn btn-sm btn-danger"
-            onClick={this.removeAllProdutos}
-          >
-            Remover Todos
-          </button>
+        <div class="table-responsive">
+          <table class="table">
+            <thead class="thead-dark">
+              <tr>
+                <th scope="col"># ID</th>
+                <th scope="col">Nome</th>
+                <th scope="col">Preço de Custo</th>
+                <th scope="col">Preço de Venda</th>
+              </tr>
+            </thead>
+            <tbody>
+              {produtos &&
+                produtos.map((produto, index) => (
+                  <tr className={
+                    (index === currentIndex ? "active" : "")
+                  }
+                    onClick={() => this.setActiveProduto(produto, index)}
+                    key={index}
+                  >
+                    <th scope="row">{produto.id}</th>
+                    <td>{produto.nome}</td>
+                    <td>{produto.precoCusto}</td>
+                    <td>{produto.precoVenda}</td>
+                  </tr>
+                ))}
+            </tbody>
+          </table>
         </div>
-        <div className="col-md-6">
-          {currentProduto ? (
+        <div class="acoesTabela row">
+          <div className="col-sm-3">
+            <button
+              className="m-3 btn btn-sm btn-danger"
+              onClick={this.removeAllProdutos}
+            >
+              Remover Todos
+            </button>
+          </div>
+          <div className="col-sm-3">
+          {(currentProduto ? "active" : "")(
             <div>
-              <h4>Produto</h4>
-              <div>
-                <label>
-                  <strong>Nome:</strong>
-                </label>{" "}
-                {currentProduto.nome}
-              </div>
-              <div>
-                <label>
-                  <strong>Preço de Custo:</strong>
-                </label>{" "}
-                {currentProduto.precoCusto}
-              </div>
-              <div>
-                <label>
-                  <strong>Preço de Venda:</strong>
-                </label>{" "}
-                {currentProduto.precoVenda}
-              </div>
-
               <Link
                 to={"/produtos/" + currentProduto.id}
                 className="badge badge-warning"
@@ -166,13 +177,11 @@ export default class ProdutosList extends Component {
                 Editar
               </Link>
             </div>
-          ) : (
-            <div>
-              <br />
-              <p>Por favor selecione um Produto...</p>
-            </div>
           )}
         </div>
+
+        </div>
+        
       </div>
     );
   }

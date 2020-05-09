@@ -67,8 +67,8 @@ export default class Produto extends Component {
     var data = {
       id: this.state.currentProduto.id,
       nome: this.state.currentProduto.nome,
-      precoCusto: this.state.currentProduto.precoCusto,
-      precoVenda: valor
+      precoCusto: this.state.currentProduto.precoCusto
+      // precoVenda: valor
     };
 
     ProdutoDataService.update(this.state.currentProduto.id, data)
